@@ -5,7 +5,7 @@ template:
 - name: __PREFIX__
   title: "URL Prefix"
   type: path
-- name: __MEMORY___
+- name: __MEMORY__
   title: "Maximum Memory"
   type: memory
 - name: __CPU__
