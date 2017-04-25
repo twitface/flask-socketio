@@ -1,0 +1,57 @@
+#!/usr/bin/python
+
+import os, sys, yaml, collections
+
+_mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+
+def dict_representer(dumper, data):
+    return dumper.represent_dict(data.iteritems())
+
+def dict_constructor(loader, node):
+    return collections.OrderedDict(loader.construct_pairs(node))
+
+yaml.add_representer(collections.OrderedDict, dict_representer)
+yaml.add_constructor(_mapping_tag, dict_constructor)
+
+with open(sys.argv[1]) as f:
+    md = yaml.load(f)
+    print """---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {name}
+spec:
+  selector:
+    app: {name}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: {{name: {name}}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{app: {name}}}
+  strategy:
+    rollingUpdate: {{maxSurge: 1, maxUnavailable: 0}}
+    type: RollingUpdate
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels: {{app: {name}}}
+      name: {name}
+    spec:
+      containers:
+      - image: {image}
+        imagePullPolicy: IfNotPresent
+        name: {name}
+        resources: {{}}
+        terminationMessagePath: /dev/termination-log
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {{}}
+      terminationGracePeriodSeconds: 30""".format(name=md["name"], image=md["images"][md["name"]])
