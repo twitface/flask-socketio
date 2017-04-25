@@ -49,7 +49,10 @@ spec:
       - image: {image}
         imagePullPolicy: IfNotPresent
         name: {name}
-        resources: {{}}
+        resources:
+          limits:
+            memory: __MEMORY__
+            cpu: __CPU__
         terminationMessagePath: /dev/termination-log
       dnsPolicy: ClusterFirst
       restartPolicy: Always
