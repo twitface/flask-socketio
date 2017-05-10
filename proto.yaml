@@ -1,0 +1,13 @@
+template:
+- name: __PROJECT_NAME__
+  title: "Project Name"
+  type: identifier
+- name: __PREFIX__
+  title: "URL Prefix"
+  type: path
+- name: __MEMORY__
+  title: "Maximum Memory"
+  type: memory
+- name: __CPU__
+  title: "Maximum CPU"
+  type: cpu
